@@ -87,5 +87,15 @@ function move_and_collide(body, colliders = [...bodies].remove(bodies.indexOf(bo
 				body.pos = target
 			}
 		}
+		function wall(axis)
+		{
+			let bound = clamp(body.pos[axis], 0, canvas.size[axis]-body.size[axis])
+			if (bound !== body.pos[axis])
+			{
+				body.vel[axis] *= -1
+				body.pos[axis] = bound
+			}
+		}
+		wall("x"); wall("y")
 	}
 }
