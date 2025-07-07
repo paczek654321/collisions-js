@@ -72,16 +72,16 @@ class Canvas
 {
 	constructor
 	(
-		size = new vec2(0),
-		cell_size = 0
+		size = new vec2(0)
 	)
 	{
 		this.size = size
-		this.cell_size = cell_size
+		this.cell_size = (Math.floor(Math.min(window.innerHeight, window.innerWidth)-20)/Math.max(size.x, size.y))
+		console.log(this.cell_size)
 
 		const html_obj = document.querySelector("canvas")
-		html_obj.width = cell_size*size.x
-		html_obj.height = cell_size*size.y
+		html_obj.width = this.cell_size*size.x
+		html_obj.height = this.cell_size*size.y
 
 		this.ctx = html_obj.getContext("2d")
 	}
