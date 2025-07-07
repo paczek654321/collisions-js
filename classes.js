@@ -126,6 +126,7 @@ class Body
 		pos = new vec2(0),
 		color = "red",
 		shape = SHAPE.rect,
+		weight = 1,
 		vel = new vec2(0)
 	)
 	{
@@ -133,6 +134,7 @@ class Body
 		this.pos = pos
 		this.color = color
 		this.shape = shape
+		this.weight = weight
 		this.vel = vel
 	}
 }

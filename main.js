@@ -1,10 +1,10 @@
 const canvas = new Canvas(new vec2(10))
 let bodies =
 [
-	new Body(new vec2(1), new vec2(2, 2), "red", SHAPE.rect, new vec2(1, 1)),
-	new Body(new vec2(1), new vec2(8, 2), "blue", SHAPE.circle, new vec2(-1, 1)),
-	new Body(new vec2(1), new vec2(4.2, 4), "lime", SHAPE.rect),
-	new Body(new vec2(1), new vec2(3, 7), "magenta", SHAPE.circle)
+	new Body(new vec2(1), new vec2(2, 2), "red", SHAPE.rect, 1, new vec2(1, 1)),
+	new Body(new vec2(1), new vec2(8, 2), "blue", SHAPE.circle, 1, new vec2(-1, 1)),
+	new Body(new vec2(1), new vec2(4.2, 4), "lime", SHAPE.rect, 1),
+	new Body(new vec2(1), new vec2(3, 7), "magenta", SHAPE.circle, 1)
 ]
 
 const fps = 60
@@ -35,6 +35,13 @@ function rect_circle_collision(rect, circle)
 	return vec2.mul(distance, center.direction_to(closest))
 }
 
+function apply_collision(offset, body, collider)
+{
+	let ratio = body.weight/(body.weight+collider.weight)
+	body.pos.add(vec2.mul(offset, 1-ratio))
+	collider.pos.sub(vec2.mul(offset, ratio))
+}
+
 function move_and_collide(body, colliders = [...bodies].remove(bodies.indexOf(body)))
 {
 	body.pos.add(vec2.div(body.vel, fps))
@@ -45,17 +52,17 @@ function move_and_collide(body, colliders = [...bodies].remove(bodies.indexOf(bo
 		{
 			let overlap = (body.size.x + collider.size.x) / 2 - body.pos.distance_to(collider.pos)
 			if (overlap <= 0) { continue }
-			body.pos.sub(vec2.mul(body.pos.direction_to(collider.pos), overlap))
+			apply_collision(vec2.mul(body.pos.direction_to(collider.pos), -overlap), body, collider)
 		}
 		else if (body.shape === SHAPE.rect && collider.shape === SHAPE.circle)
 		{
 			let movement = rect_circle_collision(body, collider)
-			if (!movement.isZero()) { body.pos.add(movement) }
+			if (!movement.isZero()) { apply_collision(movement, body, circle) }
 		}
 		else if (body.shape === SHAPE.circle && collider.shape === SHAPE.rect)
 		{
 			let movement = rect_circle_collision(collider, body)
-			if (!movement.isZero()) { body.pos.sub(movement) }
+			if (!movement.isZero()) { apply_collision(movement, collider, body) }
 		}
 		else if (body.shape === SHAPE.rect && collider.shape === SHAPE.rect)
 		{
@@ -84,7 +91,7 @@ function move_and_collide(body, colliders = [...bodies].remove(bodies.indexOf(bo
 
 			if (center.distance_to(target) > center.distance_to(body.pos))
 			{
-				body.pos = target
+				apply_collision(vec2.sub(target, body.pos), body, collider)
 			}
 		}
 		function wall(axis)
