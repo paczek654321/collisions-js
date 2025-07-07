@@ -1,8 +1,10 @@
 const canvas = new Canvas(new vec2(10), 20)
 let bodies =
 [
-	new Body(new vec2(1), new vec2(4.2, 4), "lime", SHAPE.rect),
 	new Body(new vec2(1), new vec2(2, 2), "red", SHAPE.rect, new vec2(1, 1)),
+	new Body(new vec2(1), new vec2(8, 2), "blue", SHAPE.circle, new vec2(-1, 1)),
+	new Body(new vec2(1), new vec2(4.2, 4), "lime", SHAPE.rect),
+	new Body(new vec2(1), new vec2(3, 7), "magenta", SHAPE.circle)
 ]
 
 const fps = 60
