@@ -1,12 +1,11 @@
 const canvas = new Canvas(new vec2(10))
 let bodies =
 [
-	new Body(new vec2(1), new vec2(2, 2), "red", SHAPE.rect, 1, new vec2(1, 1)),
-	new Body(new vec2(1), new vec2(8, 2), "blue", SHAPE.circle, 1, new vec2(-1, 1)),
-	new Body(new vec2(1), new vec2(4.2, 4), "lime", SHAPE.rect, 1),
-	new Body(new vec2(1), new vec2(3, 7), "magenta", SHAPE.circle, 1)
+	new Body(new vec2(1), new vec2(2, 2), "red", SHAPE.rect, 1, new vec2(5, 5)),
+	new Body(new vec2(1), new vec2(8, 2), "blue", SHAPE.circle, 1, new vec2(-5, 5)),
+	new Body(new vec2(1), new vec2(4.2, 4), "lime", SHAPE.rect, 1, new vec2(5)),
+	new Body(new vec2(1), new vec2(3, 7), "magenta", SHAPE.circle, 1, new vec2(5))
 ]
-
 const fps = 60
 setInterval(frame, 1000/fps)
 
@@ -32,14 +31,17 @@ function rect_circle_collision(rect, circle)
 	closest.y = clamp(center.y, rect.pos.y, rect.pos.y+rect.size.y)
 	
 	let distance = Math.max(circle.size.x/2 - center.distance_to(closest), 0)
-	return vec2.mul(distance, center.direction_to(closest))
+	return [vec2.mul(distance, center.direction_to(closest)), circle.pos.direction_to(closest)]
 }
 
-function apply_collision(offset, body, collider)
+function apply_collision(offset, normal, body, collider)
 {
 	let ratio = body.weight/(body.weight+collider.weight)
 	body.pos.add(vec2.mul(offset, 1-ratio))
 	collider.pos.sub(vec2.mul(offset, ratio))
+	ratio = 0.5
+	collider.vel.add(vec2.div(vec2.mul((1-ratio)*body.weight, body.vel), collider.weight))//
+	body.vel = flip_vector(vec2.mul(body.vel, ratio), normal)
 }
 
 function move_and_collide(body, colliders = [...bodies].remove(bodies.indexOf(body)))
@@ -52,17 +54,17 @@ function move_and_collide(body, colliders = [...bodies].remove(bodies.indexOf(bo
 		{
 			let overlap = (body.size.x + collider.size.x) / 2 - body.pos.distance_to(collider.pos)
 			if (overlap <= 0) { continue }
-			apply_collision(vec2.mul(body.pos.direction_to(collider.pos), -overlap), body, collider)
+			apply_collision(vec2.mul(body.pos.direction_to(collider.pos), -overlap), vec2.sub(body.pos, collider.pos).normalized(), body, collider)
 		}
 		else if (body.shape === SHAPE.rect && collider.shape === SHAPE.circle)
 		{
-			let movement = rect_circle_collision(body, collider)
-			if (!movement.isZero()) { apply_collision(movement, body, circle) }
+			let [movement, normal] = rect_circle_collision(body, collider)
+			if (!movement.isZero()) { apply_collision(movement, normal, body, collider) }
 		}
 		else if (body.shape === SHAPE.circle && collider.shape === SHAPE.rect)
 		{
-			let movement = rect_circle_collision(collider, body)
-			if (!movement.isZero()) { apply_collision(movement, collider, body) }
+			let [movement, normal] = rect_circle_collision(collider, body)
+			if (!movement.isZero()) { apply_collision(vec2.mul(movement, -1), vec2.mul(normal, -1), body, collider) }
 		}
 		else if (body.shape === SHAPE.rect && collider.shape === SHAPE.rect)
 		{
@@ -91,7 +93,20 @@ function move_and_collide(body, colliders = [...bodies].remove(bodies.indexOf(bo
 
 			if (center.distance_to(target) > center.distance_to(body.pos))
 			{
-				apply_collision(vec2.sub(target, body.pos), body, collider)
+				let normal = new vec2(0)
+				if (direction.x === direction.y)
+				{
+					normal = new vec2(Math.sign(direction.x), Math.sign(direction.y)).normalized()
+				}
+				else if (direction.x > direction.y)
+				{
+					normal.x = Math.sign(direction.x)
+				}
+				else
+				{
+					normal.y = Math.sign(direction.y)
+				}
+				apply_collision(vec2.sub(target, body.pos), normal, body, collider)
 			}
 		}
 		function wall(axis)

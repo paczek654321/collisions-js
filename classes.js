@@ -77,7 +77,6 @@ class Canvas
 	{
 		this.size = size
 		this.cell_size = (Math.floor(Math.min(window.innerHeight, window.innerWidth)-20)/Math.max(size.x, size.y))
-		console.log(this.cell_size)
 
 		const html_obj = document.querySelector("canvas")
 		html_obj.width = this.cell_size*size.x
