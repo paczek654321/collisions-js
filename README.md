@@ -7,6 +7,5 @@ You can see it here: https://paczek654321.github.io/collisions-js
 - Ivisible walls at the canvas edges
 - Bouncing
 - Transfering momentum
-
-# Planned features
-- Turning this into a simple engine
+- Some signals that allow for the making of simple games
+- Checking keypress state

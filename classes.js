@@ -119,6 +119,9 @@ class Canvas
 }
 class Body
 {
+	onFrame = (body) => null
+	onCollide = (body, collider) => null
+	onEdgeTouched = (body, edge) => null
 	constructor
 	(
 		size = new vec2(0),
