@@ -7,8 +7,9 @@ bodies.push
 )
 bodies[0].onFrame = (body) =>
 {
-	body.vel.x += (inputs["KeyD"]-inputs["KeyA"])*0.25
-	body.vel.y += (inputs["KeyS"]-inputs["KeyW"])*0.25
+	let limit = 7.5
+	body.vel.x = clamp(body.vel.x + (inputs["KeyD"]-inputs["KeyA"])*0.25, -limit, limit)
+	body.vel.y = clamp(body.vel.y + (inputs["KeyS"]-inputs["KeyW"])*0.25, -limit, limit)
 }
 
 track_key("KeyW")
@@ -16,4 +17,5 @@ track_key("KeyS")
 track_key("KeyA")
 track_key("KeyD")
 
+alert("Use the W, A, S and D keys to move the red rectangle!")
 start_game(new vec2(10))
