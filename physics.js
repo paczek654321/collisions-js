@@ -7,7 +7,7 @@ function rect_circle_collision(rect, circle)
 	closest.y = clamp(center.y, rect.pos.y, rect.pos.y+rect.size.y)
 	
 	let distance = Math.max(circle.size.x/2 - center.distance_to(closest), 0)
-	return [vec2.mul(distance, center.direction_to(closest)), circle.pos.direction_to(closest)]
+	return [vec2.mul(distance, center.direction_to(closest)), center.direction_to(closest)]
 }
 
 function apply_collision(offset, normal, body, collider)
